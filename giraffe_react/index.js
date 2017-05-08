@@ -4,115 +4,140 @@ import React, {
 } from 'react';
 import {
     StyleSheet,
-    Text,
-    View,
-    ListView,
-    TouchableHighlight,
-    Image
+    ScrollView,
+    Button,
+
 } from 'react-native';
-
-class EntryModule extends Component {
-    constructor(props) {
-        super(props);
-        var ds = new ListView.DataSource({
-            rowHasChanged: (r1, r2) => r1 !== r2,
-            sectionHeaderHasChanged: (s1, s2) => s1 !== s2
-        });
-        this.state = {
-            titleText: 'I\'m A Tittle ',
-            bodyText: 'body',
-            animating: true,
-            data: {'基础组件': ['ActivityIndicator', 'Button'], "扩展组件": ['Test']},
-            dataSource: ds,
-        };
-        this._onPressTitle = this._onPressTitle.bind(this);
-
-    }
+import {StackNavigator} from 'react-navigation';
 
 
-    _onPressTitle() {
-        this.setState({animating: !this.state.animating});
-    }
+import GiraffeText from './views/GiraffeText';
+import GiraffeActivityIndicator from './views/giraffeIndicator';
 
-    _pressRow() {
-    }
+const MyNavScreen = ({navigation, banner}) => (
+    <ScrollView>
+        <GiraffeText>{banner}</GiraffeText>
+        <Button
+            color="#c60a1e"
+            onPress={() => navigation.navigate('ActivityIndicator')}
+            title="Go to a ActivityIndicator screen"
+        />
+        <Button
+            onPress={() => navigation.navigate('Profile', {name: 'Jane'})}
+            title="Go to a profile screen"
+        />
+        <Button
+            onPress={() => navigation.navigate('Photos', {name: 'Jane'})}
+            title="Go to a photos screen"
+        />
+        <Button
+            onPress={() => navigation.goBack(null)}
+            title="Go back"
+        />
+    </ScrollView>
+);
 
-
-    _renderRow(rowData: string, sectionID: number, rowID: number) {
-
-
-        return (
-            <TouchableHighlight style={styles.row} onPress={() => {
-                this._pressRow(rowID);
-            }}>
-
-                <View >
-                    <Text style={styles.itemText}>
-                        {rowData}
-                    </Text>
-                </View>
-
-            </TouchableHighlight>
-        );
-
-    }
-
-    render() {
-        return (
-            <View style={styles.container}>
-                <View style={styles.titleView}>
-                    <Text style={styles.titleText}>UI Component Demos </Text>
-                </View>
-                <ListView
-
-                    dataSource={this.state.dataSource.cloneWithRowsAndSections(this.state.data)}
-                    renderRow={(rowData, sectionID, rowID) => this._renderRow(rowData, sectionID, rowID)}
-                    showsVerticalScrollIndicator={false}
-                />
+const MyHomeScreen = ({navigation}) => (
+    <MyNavScreen
+        banner="Home"
+        navigation={navigation}
+    />
+);
+MyHomeScreen.navigationOptions = {
+    title: 'UI Components',
 
 
-            </View>
-        );
-    }
+};
 
-}
+const MyPhotosScreen = ({navigation}) => (
+    <MyNavScreen
+        banner={`${navigation.state.params.name}'s Photos`}
+        navigation={navigation}
+    />
+);
+MyPhotosScreen.navigationOptions = {
+    title: 'Photos',
+};
+
+const MyProfileScreen = ({navigation}) => (
+    <MyNavScreen
+        banner={
+            `${navigation.state.params.mode === 'edit' ? 'Now Editing ' : ''
+                }${navigation.state.params.name}'s Profile`
+        }
+        navigation={navigation}
+    />
+);
+
+MyProfileScreen.navigationOptions = props => {
+    const {navigation} = props;
+    const {state, setParams} = navigation;
+    const {params} = state;
+    return {
+        headerTitle: `${params.name}'s Profile!`,
+        // Render a button on the right side of the header.
+        // When pressed switches the screen to edit mode.
+        headerRight: (
+            <Button
+                title={params.mode === 'edit' ? 'Done' : 'Edit'}
+                onPress={() => setParams({mode: params.mode === 'edit' ? '' : 'edit'})}
+            />
+        ),
+        gesturesEnabled: true,
+    };
+};
+
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'space-around',
+        justifyContent: 'flex-start',
         alignItems: 'stretch',
-        flexDirection: 'column'
     },
-    titleView: {
-        flex: 0.1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#c60a1e',
-    },
-    titleText: {
-        color: 'white',
-        fontSize: 18,
-    },
-    demoList: {
-        flex: 0.8,
-
-        alignItems: 'center',
-    },
-    icon: {
-        width: 200,
-        height: 150,
-    },
-    row: {
+    nav_header: {
         flexDirection: 'row',
-        justifyContent: 'center',
-        padding: 10,
-        backgroundColor: '#e3e2e2',
+
+        backgroundColor: '#c60a1e',
 
     },
-    itemText: {
-        fontSize: 16,
-        fontFamily: 'Cochin',
+    nav_title: {
+        color: 'white',
+    },
+    item:{
+        color:'#c60a1e',
+        marginTop:5,
+        marginBottom:5,
     }
+
 });
+
+
+const EntryModule = StackNavigator({
+        Home: {
+            screen: MyHomeScreen,
+        },
+        Profile: {
+            path: 'people/:name',
+            screen: MyProfileScreen,
+        },
+        Photos: {
+            path: 'photos/:name',
+            screen: MyPhotosScreen,
+        },
+        ActivityIndicator: {
+            screen: GiraffeActivityIndicator
+        }
+    },
+    {
+        headerMode: 'float',
+        cardStyle: {
+            backgroundColor: '#e3e2e2',
+        },
+        navigationOptions: {
+            headerStyle: styles.nav_header,
+            headerTintColor: "white",
+        },
+
+    });
+
 export default EntryModule;
