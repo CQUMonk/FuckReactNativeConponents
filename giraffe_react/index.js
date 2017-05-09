@@ -6,6 +6,7 @@ import {
     StyleSheet,
     ScrollView,
     Button,
+    View
 
 } from 'react-native';
 import {StackNavigator} from 'react-navigation';
@@ -13,15 +14,25 @@ import {StackNavigator} from 'react-navigation';
 
 import GiraffeText from './views/GiraffeText';
 import GiraffeActivityIndicator from './views/giraffeIndicator';
+import GiraffeImages from './views/giraffeImages'
 
 const MyNavScreen = ({navigation, banner}) => (
     <ScrollView>
         <GiraffeText>{banner}</GiraffeText>
+        <View style={styles.splitor}/>
         <Button
             color="#c60a1e"
             onPress={() => navigation.navigate('ActivityIndicator')}
             title="Go to a ActivityIndicator screen"
+            style={styles.item}
         />
+        <View style={styles.splitor}/>
+        <Button
+            color="#c60a1e"
+            onPress={() => navigation.navigate('ImageSample')}
+            title="Go to a Image screen"
+        />
+        <View style={styles.splitor}/>
         <Button
             onPress={() => navigation.navigate('Profile', {name: 'Jane'})}
             title="Go to a profile screen"
@@ -45,8 +56,6 @@ const MyHomeScreen = ({navigation}) => (
 );
 MyHomeScreen.navigationOptions = {
     title: 'UI Components',
-
-
 };
 
 const MyPhotosScreen = ({navigation}) => (
@@ -103,10 +112,15 @@ const styles = StyleSheet.create({
     nav_title: {
         color: 'white',
     },
-    item:{
-        color:'#c60a1e',
-        marginTop:5,
-        marginBottom:5,
+    item: {
+        color: '#c60a1e',
+        marginTop: 5,
+        marginBottom: 5,
+        height:50
+    },
+    splitor:{
+        height:4,
+
     }
 
 });
@@ -126,7 +140,11 @@ const EntryModule = StackNavigator({
         },
         ActivityIndicator: {
             screen: GiraffeActivityIndicator
+        },
+        ImageSample: {
+            screen: GiraffeImages
         }
+
     },
     {
         headerMode: 'float',

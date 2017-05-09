@@ -41,11 +41,6 @@ class GiraffeActivityIndicator extends Component {
                     size="large"
                     animating={this.state.animating}
                 />
-                <ActivityIndicator
-                    size="small"
-                    animating={!(this.state.animating)}
-                    color="red"
-                />
             </View>
         );
     }
